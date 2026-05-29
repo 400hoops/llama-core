@@ -12,7 +12,7 @@ from typing import Optional
 class Filter:
     class Valves(BaseModel):
         max_images: int = Field(
-            default=1, description="Number of recent images to keep in context."
+            default=2, description="Number of recent images to keep in context."
         )
 
     def __init__(self):
