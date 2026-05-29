@@ -30,7 +30,6 @@ services:
       -ctv q5_1
       --temp 0.7
       --cache-ram 65536
-      --no-mmap
       -ngl 99
 
   openwebui:
