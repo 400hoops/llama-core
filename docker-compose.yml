@@ -29,7 +29,7 @@ services:
       -ctk q5_1
       -ctv q5_1
       --temp 0.7
-      --cache-ram 65536
+      --cache-ram 8192
       -ngl 99
 
   openwebui:
