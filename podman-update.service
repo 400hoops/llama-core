@@ -1,0 +1,16 @@
+[Unit]
+Description=Maintain Podman Containers
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/podman-containers
+ExecStart=/usr/bin/podman compose pull
+ExecStart=/usr/bin/podman compose up -d
+ExecStart=/usr/bin/podman image prune -af
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=default.target

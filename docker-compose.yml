@@ -1,0 +1,53 @@
+services:
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+    container_name: llamacpp
+    ports:
+      - "127.0.0.1:8081:8081"
+    volumes:
+      - /var/home/admin/llama/models:/models:Z
+    environment:
+      - LD_LIBRARY_PATH=/app
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri/card0:/dev/dri/card0
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    privileged: false
+    ipc: host
+    restart: always
+    command: >
+      --models-dir /models/
+      --models-max 1
+      --models-preset /models/config.ini
+      --port 8081
+      --host 0.0.0.0
+      --parallel 1
+      --cache-ram 4096
+      -c 65536
+      -b 512
+      -ub 512
+      -t 6
+      -fa on
+      -ctk q4_0
+      -ctv q4_0
+      -ngl 99
+
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    privileged: false
+    labels:
+      - "io.containers.autoupdate=registry"
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui:/app/backend/data:Z
+    environment:
+      - OPENAI_API_BASE_URL=http://llamacpp:8081/v1
+      - OPENAI_API_KEY=placeholder_token
+    depends_on:
+      - llamacpp
+    restart: always
+
+volumes:
+  open-webui:

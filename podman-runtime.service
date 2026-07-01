@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Podman Compose
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sleep 10
+WorkingDirectory=%h
+ExecStart=/usr/bin/podman compose up -d
+
+[Install]
+WantedBy=default.target
