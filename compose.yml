@@ -22,15 +22,15 @@ services:
       --port 8081
       --host 0.0.0.0
       --parallel 1
-      --cache-ram 4096
-      -c 65536
+      --cache-ram 16384
+      -c 131072
       -b 512
       -ub 512
       -t 6
       -fa on
       -ctk q4_0
       -ctv q4_0
-      -ngl 99
+      -ngl 45
 
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
