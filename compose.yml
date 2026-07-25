@@ -30,7 +30,7 @@ services:
       -fa on
       -ctk q4_0
       -ctv q4_0
-      -ngl 45
+      -ngl 999
 
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
