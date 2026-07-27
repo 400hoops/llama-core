@@ -13,8 +13,9 @@ services:
       - /dev/dri/card0:/dev/dri/card0
       - /dev/dri/renderD128:/dev/dri/renderD128
     privileged: false
-    ipc: host
     restart: always
+    networks:
+      - private
     command: >
       --models-dir /models/
       --models-max 1
@@ -48,6 +49,12 @@ services:
     depends_on:
       - llamacpp
     restart: always
+    networks:
+      - private
+
+networks:
+  private:
+    internal: true
 
 volumes:
   open-webui:
