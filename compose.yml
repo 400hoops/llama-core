@@ -24,14 +24,13 @@ services:
       --host 0.0.0.0
       --parallel 1
       --cache-ram 16384
-      -c 131072
-      -b 512
+      --cache-reuse 256
+      -b 4096
       -ub 512
-      -t 6
+      -t 8
       -fa on
-      -ctk q4_0
-      -ctv q4_0
-      -ngl 999
+      -np 1
+      --api-key
 
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
@@ -40,17 +39,14 @@ services:
     labels:
       - "io.containers.autoupdate=registry"
     ports:
-      - "3000:8080"
+      - "0.0.0.0:3000:8080"
     volumes:
-      - open-webui:/app/backend/data:Z
+      - /home/nux/data/open-webui:/app/backend/data:Z
     environment:
       - OPENAI_API_BASE_URL=http://llamacpp:8081/v1
-      - OPENAI_API_KEY=placeholder_token
-    depends_on:
-      - llamacpp
-    restart: always
     networks:
-      - private
+      - private_net
+    restart: always
 
 networks:
   private:
