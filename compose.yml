@@ -3,19 +3,22 @@ services:
     image: ghcr.io/ggml-org/llama.cpp:server-vulkan
     container_name: llamacpp
     ports:
-      - "127.0.0.1:8081:8081"
+      - "192.168.55.115:8081:8081"
+    networks: [private_net]
     volumes:
-      - /var/home/admin/llama/models:/models:Z
+      - /home/nux/llama/models:/models:ro,Z
+      - /home/nux/llama/secrets/api-key:/run/api-key:ro,Z
     environment:
       - LD_LIBRARY_PATH=/app
     devices:
-      - /dev/kfd:/dev/kfd
-      - /dev/dri/card0:/dev/dri/card0
       - /dev/dri/renderD128:/dev/dri/renderD128
-    privileged: false
+      - /dev/dri/card1:/dev/dri/card1
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 24g
+    pids_limit: 256
     restart: always
-    networks:
-      - private
     command: >
       --models-dir /models/
       --models-max 1
@@ -29,28 +32,31 @@ services:
       -ub 512
       -t 8
       -fa on
-      -np 1
-      --api-key
+      --api-key-file /run/api-key
+      --slot-save-path /models/kv-cache
 
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: openwebui
-    privileged: false
-    labels:
-      - "io.containers.autoupdate=registry"
     ports:
-      - "0.0.0.0:3000:8080"
+      - "192.168.55.115:3000:8080"
     volumes:
       - /home/nux/data/open-webui:/app/backend/data:Z
     environment:
       - OPENAI_API_BASE_URL=http://llamacpp:8081/v1
-    networks:
-      - private_net
+      - OPENAI_API_KEY=${LLAMA_API_KEY}
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - WEBUI_AUTH=true
+      - ENABLE_SIGNUP=false
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - llamacpp
+    mem_limit: 4g
+    pids_limit: 512
     restart: always
 
 networks:
-  private:
+  private_net:
     internal: true
-
-volumes:
-  open-webui:
