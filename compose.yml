@@ -65,6 +65,7 @@ services:
     networks: [private_net]
     volumes:
       - /home/nux/data/aientic:/data:Z
+      - /home/nux/certs/aientic:/certs:ro,Z
     environment:
       # Model endpoints, sampler settings and upstream keys are configured
       # through the Admin UI at runtime, not here — only the session-signing
@@ -73,6 +74,10 @@ services:
       # LLAMA_API_KEY from; a container restart will invalidate every
       # signed-in session if it's ever unset or changed.
       - AIENTIC_SECRET=${AIENTIC_SECRET}
+      # mkcert-issued, valid for 192.168.55.115 specifically. Trusted on any
+      # device that has imported rootCA.pem — see the PR description.
+      - AIENTIC_TLS_CERT=/certs/aientic-cert.pem
+      - AIENTIC_TLS_KEY=/certs/aientic-key.pem
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
