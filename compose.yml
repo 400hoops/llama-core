@@ -57,6 +57,31 @@ services:
     pids_limit: 512
     restart: always
 
+  aientic:
+    image: ghcr.io/400hoops/aientic-app:latest
+    container_name: aientic
+    ports:
+      - "192.168.55.115:8080:8080"
+    networks: [private_net]
+    volumes:
+      - /home/nux/data/aientic:/data:Z
+    environment:
+      # Model endpoints, sampler settings and upstream keys are configured
+      # through the Admin UI at runtime, not here — only the session-signing
+      # secret is set at deploy time. Add AIENTIC_SECRET=<random value> to
+      # the same .env this compose file already reads WEBUI_SECRET_KEY and
+      # LLAMA_API_KEY from; a container restart will invalidate every
+      # signed-in session if it's ever unset or changed.
+      - AIENTIC_SECRET=${AIENTIC_SECRET}
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - llamacpp
+    mem_limit: 512m
+    pids_limit: 128
+    restart: always
+
 networks:
   private_net:
     internal: true
